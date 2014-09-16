@@ -1,0 +1,68 @@
+\ProvidesPackage{luauline}[2014/09/15 v0.1.0]
+
+\RequirePackage{luatexbase}
+
+\directlua{require("luauline")}
+
+\newlength{\lua@underline@depth}
+\newlength{\lua@underline@height}
+\setlength{\lua@underline@depth}{1pt}
+\setlength{\lua@underline@height}{0.4pt}
+\newcounter{lua@underline@number}
+\newsavebox\lua@underline@box
+
+\newcommand{\setluaunderlinedepth}[1]{\setlength{\lua@underline@depth}{#1}}
+\newcommand{\setluaunderlineheight}[1]{\setlength{\lua@underline@height}{#1}}
+
+\newcommand*{\lua@generic@underline}[1]{%
+    \quitvmode
+    \begingroup
+        \stepcounter{lua@underline@number}%
+        \edef\temp@lua@uline@number{\the\value{lua@underline@number}}%
+        \directlua{create_user_node("lua@underline@start@\temp@lua@uline@number")}%
+        #1%
+        \directlua{create_user_node("lua@underline@stop@\temp@lua@uline@number")}%
+    \endgroup
+}
+
+\newcommand*{\lua@underline}[1]{%
+    \lua@generic@underline{%
+        \directlua{create_user_rule_node("\the\lua@underline@depth", "\the\lua@underline@height")}%
+        #1%
+    }%
+}
+
+\newcommand*{\lua@mark@over@width}[2]{%
+    \lua@generic@underline{%
+        \savebox\lua@underline@box{#1}%
+        \directlua{create_user_leaders_node()}%
+        #2%
+    }%
+}
+
+\newcommand*{\lua@mark@under}[2]{%
+    \lua@generic@underline{%
+        \savebox\lua@underline@box{\makebox[0pt][c]{#1}}%
+        \directlua{create_user_hlist_node()}%
+        #2%
+    }%
+}
+
+\newcommand*{\lua@under@underline}[1]{%
+    \lua@underline{%
+        \setlength{\lua@underline@depth}{2.4pt}%
+        \lua@underline{#1}%
+    }%
+}
+
+\newcommand*{\lua@strikeout}[1]{%
+    \begingroup
+        \setlength{\lua@underline@depth}{-0.5ex-\lua@underline@height}%
+        \lua@underline{#1}%
+    \endgroup
+}
+
+\newcommand{\uline}[1]{\lua@underline{#1}}
+\newcommand{\uuline}[1]{\lua@under@underline{#1}}
+\newcommand{\sout}[1]{\lua@strikeout{#1}}
+\newcommand{\markunder}[2]{\lua@mark@under{#1}{#2}}
