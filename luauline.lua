@@ -164,6 +164,6 @@ end
 add_underline_callback = function ()
   local priority = luatexbase.priority_in_callback("post_linebreak_filter", "underline")
   if not priority then
-    luatexbase.add_to_callback("post_linebreak_filter", get_lines, "underline", 1)
+    luatexbase.add_to_callback("post_linebreak_filter", get_lines, "underline")
   end
 end
