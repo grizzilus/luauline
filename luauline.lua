@@ -152,10 +152,8 @@ end
 local get_lines = function (head)
   local continue = false
   for i,entry in ipairs(get_instances(head, "lua@underline@start", "@")) do
-    for line in node.traverse(head) do
-      if line.id == HLIST or line.id == VLIST then
-        continue = underline(line.head, line.glue_order, line.glue_set, line.glue_sign, entry[1], entry[2], continue)
-      end
+    for line in node.traverse_id(HLIST, head) do
+      continue = underline(line.head, line.glue_order, line.glue_set, line.glue_sign, entry[1], entry[2], continue)
     end
   end
   remove_instances(head)
