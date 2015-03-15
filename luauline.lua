@@ -160,5 +160,4 @@ local get_lines = function (head)
   return head
 end
 
-luatexbase.add_to_callback("vpack_filter", get_lines, "underline", 1)
 luatexbase.add_to_callback("post_linebreak_filter", get_lines, "underline", 1)
