@@ -101,6 +101,34 @@ local good_item = function(item)
   end
 end
 
+local insert_single_underline = function (head, ratio, sign, order, item, end_node, action)
+  local temp_width = node.dimensions(ratio, sign, order, item, end_node.next)
+  local new_item = nil
+  if action.id == RULE then
+    new_item = node.new(RULE)
+    new_item.depth = action.depth
+    new_item.height = action.height
+    new_item.width = temp_width
+  elseif action.id == HLIST then
+    new_item = node.new(HLIST)
+    new_item = node.copy(action)
+    new_item.width = temp_width/2
+    temp_width = temp_width/2
+  elseif action.id == GLUE then
+    new_item = node.new(GLUE)
+    new_item_spec = node.new(GLUESPEC)
+    new_item_spec.width, new_item_spec.stretch, new_item_spec.shrink = temp_width, 0, 0
+    new_item.spec = new_item_spec
+    new_item.subtype = 101
+    new_item.leader = node.copy(action.leader)
+  end
+  local item_kern = node.new(KERN, 1)
+  item_kern.kern = -temp_width
+  node.insert_after(head, end_node, item_kern)
+  node.insert_after(head, item_kern, new_item)
+  return new_item
+end
+
 local underline
 underline = function (head, order, ratio, sign, index, action, cont)
   local newcontinue = false
@@ -118,29 +146,7 @@ underline = function (head, order, ratio, sign, index, action, cont)
       if not ( check_whatsit_user_string(end_node.next) and string.starts(end_node.next.value, "lua@underline@stop@" .. index) ) then
         newcontinue = true
       end
-      temp_width = node.dimensions(ratio, sign, order, item, end_node.next)
-      if action.id == RULE then
-        new_item = node.new(RULE)
-        new_item.depth = action.depth
-        new_item.height = action.height
-        new_item.width = temp_width
-      elseif action.id == HLIST then
-        new_item = node.new(HLIST)
-        new_item = node.copy(action)
-        new_item.width = temp_width/2
-        temp_width = temp_width/2
-      elseif action.id == GLUE then
-        new_item = node.new(GLUE)
-        new_item_spec = node.new(GLUESPEC)
-        new_item_spec.width, new_item_spec.stretch, new_item_spec.shrink = temp_width, 0, 0
-        new_item.spec = new_item_spec
-        new_item.subtype = 101
-        new_item.leader = node.copy(action.leader)
-      end
-      local item_kern = node.new(KERN, 1)
-      item_kern.kern = -temp_width
-      node.insert_after(head, end_node, item_kern)
-      node.insert_after(head, item_kern, new_item)
+      new_item = insert_single_underline(head, ratio, sign, order, item, end_node, action)
       item = new_item.next
     else
       item = item.next
