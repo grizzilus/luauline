@@ -78,21 +78,6 @@ get_instances = function (head, prefix, separator)
   return current_instances
 end
 
-local remove_instances
-remove_instances = function (head)
-  for line in node.traverse(head) do
-    local item = line.head
-    while item do
-      if check_whatsit_user_string(item) and string.starts(item.value, "lua@underline@start@") then
-        line.head, item = node.remove(line.head, item)
-      elseif item.id == HLIST or item.id == VLIST then
-        remove_instances(item)
-      end
-      item = item.next
-    end
-  end
-end
-
 local good_item = function(item)
   if item.id == GLUE and (item.subtype == 8 or item.subtype == 9 or item.subtype == 15) then
     return false
@@ -138,6 +123,9 @@ underline = function (head, order, ratio, sign, index, action, cont)
       newcontinue = underline(item.head, item.glue_order, item.glue_set, item.glue_sign, index, action, cont)
       item = item.next
     elseif cont or ( check_whatsit_user_string(item) and string.starts(item.value,"lua@underline@start@" .. index) ) then
+      if check_whatsit_user_string(item) and string.starts(item.value,"lua@underline@start@" .. index) then
+        node.remove(head, item)
+      end
       cont = false
       local end_node = item
       while end_node.next and not ( check_whatsit_user_string(end_node.next) and string.starts(end_node.next.value, "lua@underline@stop@" .. index) ) and good_item(end_node.next) do
@@ -162,7 +150,6 @@ local get_lines = function (head)
       continue = underline(line.head, line.glue_order, line.glue_set, line.glue_sign, entry[1], entry[2], continue)
     end
   end
-  remove_instances(head)
   return head
 end
 
