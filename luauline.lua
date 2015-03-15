@@ -1,4 +1,5 @@
 local HLIST = node.id("hlist")
+local VLIST = node.id("vlist")
 local RULE = node.id("rule")
 local GLUE = node.id("glue")
 local GLUESPEC = node.id("glue_spec")
@@ -57,7 +58,7 @@ end
 local get_instances
 get_instances = function (head, prefix, separator)
   local current_instances = { }
-  for line in node.traverse_id(HLIST, head) do
+  for line in node.traverse(head) do
     local item = line.head
     while item do
       if check_whatsit_user_string(item) and string.starts(item.value, prefix .. separator) then
@@ -66,7 +67,7 @@ get_instances = function (head, prefix, separator)
         item = item.next
         table.insert(current_instance, item.value)
         table.insert(current_instances, current_instance)
-      elseif item.id == HLIST then
+      elseif item.id == HLIST or item.id == VLIST then
         for i,entry in ipairs(get_instances(item, prefix, separator)) do
           table.insert(current_instances, entry)
         end
@@ -79,12 +80,12 @@ end
 
 local remove_instances
 remove_instances = function (head)
-  for line in node.traverse_id(HLIST, head) do
+  for line in node.traverse(head) do
     local item = line.head
     while item do
       if check_whatsit_user_string(item) and string.starts(item.value, "lua@underline@start@") then
         line.head, item = node.remove(line.head, item)
-      elseif item.id == HLIST then
+      elseif item.id == HLIST or item.id == VLIST then
         remove_instances(item)
       end
       item = item.next
@@ -105,7 +106,7 @@ underline = function (head, order, ratio, sign, index, action, cont)
   local newcontinue = false
   local item = head
   while item do
-    if item.id == HLIST then
+    if item.id == HLIST or item.id == VLIST then
       newcontinue = underline(item.head, item.glue_order, item.glue_set, item.glue_sign, index, action, cont)
       item = item.next
     elseif cont or ( check_whatsit_user_string(item) and string.starts(item.value,"lua@underline@start@" .. index) ) then
@@ -151,7 +152,7 @@ end
 local get_lines = function (head)
   local continue = false
   for i,entry in ipairs(get_instances(head, "lua@underline@start", "@")) do
-    for line in node.traverse_id(HLIST, head) do
+    for line in node.traverse(head) do
       continue = underline(line.head, line.glue_order, line.glue_set, line.glue_sign, entry[1], entry[2], continue)
     end
   end
