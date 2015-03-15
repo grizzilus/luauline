@@ -68,7 +68,7 @@ get_instances = function (head, prefix, separator)
         table.insert(current_instance, item.value)
         table.insert(current_instances, current_instance)
       elseif item.id == HLIST or item.id == VLIST then
-        for i,entry in ipairs(get_instances(item, prefix, separator)) do
+        for _,entry in ipairs(get_instances(item, prefix, separator)) do
           table.insert(current_instances, entry)
         end
       end
@@ -147,7 +147,7 @@ end
 
 local get_lines = function (head)
   local continue = false
-  for i,entry in ipairs(get_instances(head, "lua@underline@start", "@")) do
+  for _,entry in ipairs(get_instances(head, "lua@underline@start", "@")) do
     for line in node.traverse_id(HLIST, head) do
       continue = underline(line.head, line.glue_order, line.glue_set, line.glue_sign, entry[1], entry[2], continue)
     end
