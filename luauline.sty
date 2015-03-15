@@ -18,7 +18,6 @@
     \quitvmode
     \begingroup
         \stepcounter{lua@underline@number}%
-        \directlua{add_underline_callback()}%
         \edef\temp@lua@uline@number{\the\value{lua@underline@number}}%
         \directlua{create_user_node("lua@underline@start@\temp@lua@uline@number")}%
         #1%
