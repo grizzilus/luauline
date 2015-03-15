@@ -78,7 +78,7 @@ get_instances = function (head, prefix, separator)
 end
 
 local remove_instances
-remove_instances= function (head)
+remove_instances = function (head)
   for line in node.traverse_id(HLIST, head) do
     local item = line.head
     while item do
