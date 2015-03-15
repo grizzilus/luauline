@@ -157,7 +157,13 @@ local get_lines = function (head)
     end
   end
   remove_instances(head)
+  luatexbase.remove_from_callback("post_linebreak_filter", "underline")
   return head
 end
 
-luatexbase.add_to_callback("post_linebreak_filter", get_lines, "underline", 1)
+add_underline_callback = function ()
+  local priority = luatexbase.priority_in_callback("post_linebreak_filter", "underline")
+  if not priority then
+    luatexbase.add_to_callback("post_linebreak_filter", get_lines, "underline", 1)
+  end
+end
