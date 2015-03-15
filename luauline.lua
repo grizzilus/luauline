@@ -55,27 +55,32 @@ create_user_hlist_node = function()
   node.write(temp_user_node)
 end
 
+last_underline = 0
+
 local get_instances
 get_instances = function (head, prefix, separator)
-  local current_instances = { }
-  for line in node.traverse(head) do
-    local item = line.head
-    while item do
-      if check_whatsit_user_string(item) and string.starts(item.value, prefix .. separator) then
-        local current_instance = { }
-        table.insert(current_instance, string.sub(item.value,string.len(prefix)+string.len(separator)+1))
-        item = item.next
-        table.insert(current_instance, item.value)
-        table.insert(current_instances, current_instance)
-      elseif item.id == HLIST or item.id == VLIST then
-        for _,entry in ipairs(get_instances(item, prefix, separator)) do
-          table.insert(current_instances, entry)
+  if tonumber(tex.getcount('c@lua@underline@number')) > last_underline then
+    local current_instances = { }
+    for line in node.traverse(head) do
+      local item = line.head
+      while item do
+        if check_whatsit_user_string(item) and string.starts(item.value, prefix .. separator) then
+          local current_instance = { }
+          table.insert(current_instance, string.sub(item.value,string.len(prefix)+string.len(separator)+1))
+          item = item.next
+          table.insert(current_instance, item.value)
+          table.insert(current_instances, current_instance)
+        elseif item.id == HLIST or item.id == VLIST then
+          for _,entry in ipairs(get_instances(item, prefix, separator)) do
+            table.insert(current_instances, entry)
+          end
         end
+        item = item.next
       end
-      item = item.next
     end
+    return current_instances
   end
-  return current_instances
+  return { }
 end
 
 local good_item = function(item)
@@ -134,6 +139,7 @@ underline = function (head, order, ratio, sign, index, action, cont)
       if not ( check_whatsit_user_string(end_node.next) and string.starts(end_node.next.value, "lua@underline@stop@" .. index) ) then
         newcontinue = true
       else
+        last_underline = tonumber(index)
         node.remove(head, end_node.next)
       end
       new_item = insert_single_underline(head, ratio, sign, order, item, end_node, action)
