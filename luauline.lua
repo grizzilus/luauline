@@ -133,6 +133,8 @@ underline = function (head, order, ratio, sign, index, action, cont)
       end
       if not ( check_whatsit_user_string(end_node.next) and string.starts(end_node.next.value, "lua@underline@stop@" .. index) ) then
         newcontinue = true
+      else
+        node.remove(head, end_node.next)
       end
       new_item = insert_single_underline(head, ratio, sign, order, item, end_node, action)
       item = new_item.next
