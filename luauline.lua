@@ -20,7 +20,7 @@ end
 
 create_user_node = function(data)
   local temp_user_node = node.new(WHAT, USER)
-  temp_user_node.type = 115 -- subtype needs converting
+  temp_user_node.type = 115
   temp_user_node.value = data
   node.write(temp_user_node)
 end
@@ -30,7 +30,7 @@ create_user_rule_node = function(depth, height)
   local temp_rule_node = node.new(RULE)
   temp_rule_node.height = -tex.sp(depth)
   temp_rule_node.depth = tex.sp(depth) + tex.sp(height)
-  temp_user_node.type = 110-- subtype needs converting
+  temp_user_node.type = 110
   temp_user_node.value = node.copy(temp_rule_node)
   node.write(temp_user_node)
 end
@@ -41,16 +41,16 @@ create_user_leaders_node = function()
   local item_leader_spec = node.new(GLUESPEC)
   item_leader_spec.width, item_leader_spec.stretch, item_leader_spec.shrink = 0, 0, 0
   item_leader.spec = item_leader_spec
-  item_leader.subtype = 101-- subtype needs converting
+  item_leader.subtype = 101
   item_leader.leader = node.copy(tex.getbox("lua@underline@box"))
-  temp_user_node.type = 110-- subtype needs converting
+  temp_user_node.type = 110
   temp_user_node.value = node.copy(item_leader)
   node.write(temp_user_node)
 end
 
 create_user_hlist_node = function()
   local temp_user_node =node.new(WHAT, USER)
-  temp_user_node.type = 110-- subtype needs converting
+  temp_user_node.type = 110
   temp_user_node.value = node.copy(tex.getbox("lua@underline@box"))
   node.write(temp_user_node)
 end
