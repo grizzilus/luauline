@@ -19,6 +19,7 @@
     \begingroup
         \stepcounter{lua@underline@number}%
         \edef\temp@lua@uline@number{\the\value{lua@underline@number}}%
+        \directlua{underline_numbers[\the\value{lua@underline@number}] = true}%
         \directlua{create_user_node("lua@underline@start@\temp@lua@uline@number")}%
         #1%
         \directlua{create_user_node("lua@underline@stop@\temp@lua@uline@number")}%
