@@ -140,7 +140,6 @@ underline = function (head, order, ratio, sign, index, action, cont)
         newcontinue = true
       else
         underline_numbers[tonumber(index)] = nil
-        node.remove(head, end_node.next)
       end
       new_item = insert_single_underline(head, ratio, sign, order, item, end_node, action)
       item = new_item.next
