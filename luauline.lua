@@ -132,6 +132,9 @@ underline = function (head, order, ratio, sign, index, action, cont)
         node.remove(head, item)
       end
       cont = false
+      while not good_item(item) do -- strip off leading glue of types 8, 9, and 15
+        item = item.next
+      end
       local end_node = item
       while end_node.next and not ( check_whatsit_user_string(end_node.next) and string.starts(end_node.next.value, "lua@underline@stop@" .. index) ) and good_item(end_node.next) do
         end_node = end_node.next
