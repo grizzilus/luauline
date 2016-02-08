@@ -7,8 +7,9 @@ local KERN = node.id("kern")
 local WHAT = node.id("whatsit")
 local USER = node.subtype("user_defined")
 
-function string.starts(String,Start)
-  return string.sub(String,1,string.len(Start)) == Start
+local strings = strings or { }
+local function strings.starts(String,Start)
+  return strings.sub(String,1,strings.len(Start)) == Start
 end
 
 local check_whatsit_user_string = function(item)
@@ -64,7 +65,7 @@ get_instances = function (head, prefix, separator)
     for line in node.traverse(head) do
       local item = line.head
       while item do
-        if check_whatsit_user_string(item) and string.starts(item.value, prefix .. separator) then
+        if check_whatsit_user_string(item) and strings.starts(item.value, prefix .. separator) then
           local current_instance = { }
           table.insert(current_instance, string.sub(item.value,string.len(prefix)+string.len(separator)+1))
           item = item.next
@@ -127,8 +128,8 @@ underline = function (head, order, ratio, sign, index, action, cont)
     if item.id == HLIST or item.id == VLIST then
       newcontinue = underline(item.head, item.glue_order, item.glue_set, item.glue_sign, index, action, cont)
       item = item.next
-    elseif cont or ( check_whatsit_user_string(item) and string.starts(item.value,"lua@underline@start@" .. index) ) then
-      if check_whatsit_user_string(item) and string.starts(item.value,"lua@underline@start@" .. index) then
+    elseif cont or ( check_whatsit_user_string(item) and strings.starts(item.value,"lua@underline@start@" .. index) ) then
+      if check_whatsit_user_string(item) and strings.starts(item.value,"lua@underline@start@" .. index) then
         node.remove(head, item)
       end
       cont = false
@@ -136,10 +137,10 @@ underline = function (head, order, ratio, sign, index, action, cont)
         item = item.next
       end
       local end_node = item
-      while end_node.next and not ( check_whatsit_user_string(end_node.next) and string.starts(end_node.next.value, "lua@underline@stop@" .. index) ) and good_item(end_node.next) do
+      while end_node.next and not ( check_whatsit_user_string(end_node.next) and strings.starts(end_node.next.value, "lua@underline@stop@" .. index) ) and good_item(end_node.next) do
         end_node = end_node.next
       end
-      if not ( check_whatsit_user_string(end_node.next) and string.starts(end_node.next.value, "lua@underline@stop@" .. index) ) then
+      if not ( check_whatsit_user_string(end_node.next) and strings.starts(end_node.next.value, "lua@underline@stop@" .. index) ) then
         newcontinue = true
       else
         underline_numbers[tonumber(index)] = nil
