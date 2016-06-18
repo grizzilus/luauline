@@ -38,9 +38,13 @@ end
 create_user_leaders_node = function()
   local temp_user_node = node.new(WHAT, USER)
   local item_leader = node.new(GLUE)
-  local item_leader_spec = node.new(GLUESPEC)
-  item_leader_spec.width, item_leader_spec.stretch, item_leader_spec.shrink = 0, 0, 0
-  item_leader.spec = item_leader_spec
+  if not item_leader.width then
+    local item_leader_spec = node.new(GLUESPEC)
+    item_leader_spec.width, item_leader_spec.stretch, item_leader_spec.shrink = 0, 0, 0
+    item_leader.spec = item_leader_spec
+  else
+    item_leader.width, item_leader.stretch, item_leader.shrink = 0, 0, 0
+  end
   item_leader.subtype = 101
   item_leader.leader = node.copy(tex.getbox("lua@underline@box"))
   temp_user_node.type = 110
@@ -106,9 +110,13 @@ local insert_single_underline = function (head, ratio, sign, order, item, end_no
     temp_width = temp_width/2
   elseif action.id == GLUE then
     new_item = node.new(GLUE)
-    new_item_spec = node.new(GLUESPEC)
-    new_item_spec.width, new_item_spec.stretch, new_item_spec.shrink = temp_width, 0, 0
-    new_item.spec = new_item_spec
+    if not item.width then
+      new_item_spec = node.new(GLUESPEC)
+      new_item_spec.width, new_item_spec.stretch, new_item_spec.shrink = temp_width, 0, 0
+      new_item.spec = new_item_spec
+    else
+      new_item.width, new_item.stretch, new_item.shrink = temp_width, 0, 0
+    end
     new_item.subtype = 101
     new_item.leader = node.copy(action.leader)
   end
