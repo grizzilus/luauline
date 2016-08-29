@@ -147,7 +147,7 @@ underline = function (head, order, ratio, sign, index, action, cont)
       while end_node.next and not ( check_whatsit_user_string(end_node.next) and string.starts(end_node.next.value, "lua@underline@stop@" .. index) ) and good_item(end_node.next) do
         end_node = end_node.next
       end
-      if not ( check_whatsit_user_string(end_node.next) and string.starts(end_node.next.value, "lua@underline@stop@" .. index) ) then
+      if not ( end_node.next and check_whatsit_user_string(end_node.next) and string.starts(end_node.next.value, "lua@underline@stop@" .. index) ) then
         newcontinue = true
       else
         underline_numbers[tonumber(index)] = nil
