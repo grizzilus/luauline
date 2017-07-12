@@ -89,7 +89,7 @@ get_instances = function (head, prefix, separator)
 end
 
 local good_item = function(item)
-  if item.id == GLUE and (item.subtype == 8 or item.subtype == 9 or item.subtype == 15) then
+  if item.id == MARGIN_KERN or (item.id == GLUE and (item.subtype == 8 or item.subtype == 9 or item.subtype == 15)) then
     return false
   else
     return true
@@ -98,13 +98,6 @@ end
 
 local insert_single_underline = function (head, ratio, sign, order, item, end_node, action)
   local temp_width = node.dimensions(ratio, sign, order, item, end_node.next)
-  local margin_kern_shift = 0
-  local margin_kern_node = end_node
-  while margin_kern_node.id == MARGIN_KERN do
-    margin_kern_shift = margin_kern_shift + margin_kern_node.width
-    margin_kern_node = margin_kern_node.prev
-  end
-  temp_width = temp_width - margin_kern_shift
   local new_item = nil
   if action.id == RULE then
     new_item = node.new(RULE)
@@ -129,12 +122,9 @@ local insert_single_underline = function (head, ratio, sign, order, item, end_no
     new_item.leader = node.copy(action.leader)
   end
   local item_kern = node.new(KERN, 1)
-  item_kern.kern = -temp_width - margin_kern_shift
-  local final_kern = node.new(KERN, 1)
-  final_kern.kern = margin_kern_shift
+  item_kern.kern = -temp_width
   node.insert_after(head, end_node, item_kern)
   node.insert_after(head, item_kern, new_item)
-  node.insert_after(head, new_item, final_kern)
   return new_item
 end
 
